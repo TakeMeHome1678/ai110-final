@@ -84,11 +84,30 @@ The test harness checks matching and unrelated retrieval, summary behavior, requ
 12 passed in 0.01s
 ```
 
+Run the predefined evaluation harness with:
+
+```bash
+python evaluate.py
+```
+
+```text
+PASS | Debug retrieval | kind=debug | confidence=0.57 | evidence=1
+PASS | Summarization | kind=summarize | confidence=0.35 | evidence=0
+PASS | Missing evidence | kind=retrieve | confidence=0.25 | evidence=0
+SUMMARY: 3/3 passed; 100% pass rate
+```
+
 If a test fails, the implementation should show the exact assertion and traceback so a developer can reproduce and isolate the issue.
 
 ## Reflection
 
 This project changed my view of AI systems from “one model response” to a coordinated pipeline of inputs, retrieval, planning, tool execution, testing, and human review. The clearest lesson was that guardrails and evidence are useful not only as safety features, but also as engineering controls that make outputs easier to verify.
+
+During development, I used AI to propose the RAG/agent structure and to locate the original app’s logic. I accepted the suggestion to separate retrieval, planning, and UI concerns because it produced focused testable modules. I revised an initial decimal-parser suggestion that used `int(float(raw))`, because it silently truncated a decimal instead of rejecting invalid input. Future improvements would add semantic embeddings, a larger multi-source index, and stronger human-evaluation procedures.
+
+### RAG Enhancement: Before and After
+
+Before custom sources were added, the system could only answer from four built-in documents in `data/knowledge.json`. It now supports user-defined title/text sources through the Streamlit UI. In a before-style request for an unrelated topic, the no-evidence result is stable; after adding a relevant document, the same topic can retrieve that source and include its score and text in the answer instead of returning the generic no-evidence response.
 
 Responsible-AI limitations and misuse considerations are documented in [model_card.md](model_card.md). Development interaction traces are documented in [ai_interactions.md](ai_interactions.md).
 

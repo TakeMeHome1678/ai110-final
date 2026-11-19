@@ -34,7 +34,8 @@ def retrieve(query: str, documents: Iterable[dict], limit: int = 3) -> list[dict
         searchable = f"{document.get('title', '')} {document.get('text', '')}"
         score = cosine_similarity(query, searchable)
         # Ignore weak lexical matches instead of presenting unrelated text as evidence.
-        if score >= 0.25:
+        overlapping_terms = set(tokenize(query)).intersection(tokenize(searchable))
+        if score >= 0.25 and len(overlapping_terms) >= 2:
             ranked.append({**document, "score": round(score, 4)})
     ranked.sort(key=lambda item: item["score"], reverse=True)
     return ranked[:limit]

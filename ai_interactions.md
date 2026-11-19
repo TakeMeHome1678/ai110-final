@@ -26,7 +26,7 @@ The application performs these steps:
 }
 ```
 
-Live execution traces are appended to `logs/trace.jsonl`, and system errors are appended to `logs/system.log`.
+Live execution traces are appended to `logs/trace.jsonl` by the application and `logs/evaluation-trace.jsonl` by the evaluation harness. System errors are appended to `logs/system.log`. The JSONL form preserves request classification, plan status, evidence, confidence, and timestamps without publishing hidden chain-of-thought text.
 
 ## AI-Assisted Development
 
