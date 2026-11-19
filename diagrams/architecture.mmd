@@ -1,0 +1,18 @@
+flowchart TD
+    User[Human user] --> UI[Streamlit interface]
+    UI --> Guard[Input validation and guardrails]
+    Guard --> Agent[Agent controller]
+    Agent --> Plan[Plan task steps]
+    Plan --> Tools{Tool selection}
+    Tools -->|Retrieve| RAG[Cosine-similarity retriever]
+    Tools -->|Summarize| Summary[Extractive summarizer]
+    Tools -->|Debug| Debug[Debugging workflow]
+    RAG --> Evidence[Ranked evidence and confidence]
+    Summary --> Evidence
+    Debug --> Evidence
+    Evidence --> Output[Grounded answer]
+    Output --> Human[Human review]
+    Human -->|Feedback or correction| UI
+    Agent --> Trace[JSONL execution log]
+    Trace --> Tests[Automated reliability tests]
+    Tests -->|Results and failures| Human

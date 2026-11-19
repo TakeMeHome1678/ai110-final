@@ -1,76 +1,37 @@
-# AI Interactions Log
+# AI Interaction and Agent Trace Log
 
-> **Stretch features only.** Only fill in the sections that apply to stretch features you attempted. If you did not attempt a stretch feature, leave its section blank or delete it. This file is not required for the core project.
+## Agent Workflow
 
----
+The application performs these steps:
 
-## Agent Workflow (SF8)
+1. Classify the request as summarize, retrieve, plan, or debug.
+2. Generate a short, checkable plan.
+3. Retrieve ranked source passages using cosine similarity.
+4. Execute the selected local tool.
+5. Calculate confidence and append a JSONL execution trace.
 
-> Document your experience using an AI agent (e.g., Cursor Agent, Claude, Copilot) to make multi-step changes autonomously.
+## Example Interaction Trace
 
-**What task did you give the agent?**
-
-<!-- Describe the goal you asked the agent to accomplish -->
-
-**What did the agent do?**
-
-<!-- List the steps the agent took (files edited, commands run, etc.) -->
-
-**What did you have to verify or fix manually?**
-
-<!-- Describe anything the agent got wrong or that required human review -->
-
----
-
-## Test Generation (SF7)
-
-> Document how you used AI to help generate or improve tests.
-
-| Edge Case | Prompt Used | AI-Suggested Test | Did It Pass? | Your Reasoning |
-|-----------|-------------|-------------------|--------------|----------------|
-| | | | | |
-| | | | | |
-| | | | | |
-
----
-
-## Linting & Style (SF9)
-
-> Document your use of AI for linting or code style improvements.
-
-**Prompt used:**
-
-```
-<!-- Paste the prompt you gave the AI -->
+```json
+{
+  "task": "How should I debug a failing Python test?",
+  "kind": "debug",
+  "plan": [
+    {"step": 1, "action": "Identify error symptoms", "status": "completed"},
+    {"step": 2, "action": "Map symptoms to likely causes", "status": "completed"},
+    {"step": 3, "action": "Suggest a minimal reproduction and fix", "status": "completed"}
+  ],
+  "confidence": 0.82,
+  "review": "Human-readable trace recorded by agent_utils.write_trace"
+}
 ```
 
-**Linting output before:**
+Live execution traces are appended to `logs/trace.jsonl`, and system errors are appended to `logs/system.log`.
 
-```
-<!-- Paste relevant linter warnings/errors -->
-```
+## AI-Assisted Development
 
-**Changes applied:**
+**Task given to the AI:** Transform the guessing-game starter into a reproducible RAG and agentic Streamlit system, while preserving clear setup, tests, architecture, and responsible-AI documentation.
 
-<!-- Describe what you changed based on the AI's suggestions -->
+**What it did:** Created local retrieval and summarization utilities, an agent controller and trace logger, a Streamlit interface, automated tests, Mermaid architecture source, and a model card.
 
----
-
-## Model Comparison (SF11)
-
-> Compare two AI models on the same task.
-
-**Task given to both models:**
-
-<!-- Describe what you asked each model to do -->
-
-| | Model A | Model B |
-|-|---------|---------|
-| **Model name** | | |
-| **Response summary** | | |
-| **More Pythonic?** | | |
-| **Clearer explanation?** | | |
-
-**Which did you prefer and why?**
-
-<!-- Your conclusion -->
+**What required human verification:** I reviewed the source retrieval behavior, ran pytest, checked for missing-input handling, and verified the live Streamlit interface before finalizing.

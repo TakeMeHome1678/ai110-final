@@ -1,0 +1,22 @@
+[
+  {
+    "id": "rag-1",
+    "title": "Retrieval design",
+    "text": "Retrieval augmented generation should first rank relevant source passages, then pass those passages to the response workflow. Low retrieval confidence should trigger a graceful no-evidence answer rather than inventing facts."
+  },
+  {
+    "id": "debug-1",
+    "title": "Python debugging workflow",
+    "text": "When Python tests fail, reproduce the smallest failing input, inspect the traceback, identify the responsible function, add or update a focused regression test, and rerun pytest."
+  },
+  {
+    "id": "streamlit-1",
+    "title": "Streamlit session state",
+    "text": "Streamlit reruns the script after interactions. Values that must survive reruns belong in st.session_state. A new game should explicitly reset attempts, score, status, history, and the secret."
+  },
+  {
+    "id": "testing-1",
+    "title": "Reliability testing",
+    "text": "Reliability is checked with automated tests, confidence scores, validation for missing input, and logs that record execution and failures. Evidence should be cited when possible."
+  }
+]

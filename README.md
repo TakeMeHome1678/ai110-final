@@ -1,51 +1,108 @@
-# 🎮 Game Glitch Investigator: The Impossible Guesser
+# Applied AI Workbench
 
-## 🚨 The Situation
+## Summary
 
-You asked an AI to build a simple "Number Guessing Game" using Streamlit.
-It wrote the code, ran away, and now the game is unplayable. 
+Applied AI Workbench evolved the original guessing-game repository into a local AI workbench that summarizes text, retrieves evidence from a knowledge base, plans bounded steps, and produces debugging guidance. It matters because it demonstrates RAG and agentic behavior as integrated application features rather than isolated scripts.
 
-- You can't win.
-- The hints lie to you.
-- The secret number seems to have commitment issues.
+## Architecture Overview
 
-## 🛠️ Setup
+The Streamlit interface validates input and sends the request to the agent controller. The controller classifies the task, creates a plan, retrieves relevant passages, executes the appropriate local tool, computes a confidence score, and records JSONL and log output. Humans can review evidence and edit the source library; automated tests check retrieval, summarization, planning, confidence, and missing-evidence behavior. The full Mermaid source is at [diagrams/architecture.mmd](diagrams/architecture.mmd).
 
-1. Install dependencies: `pip install -r requirements.txt`
-2. Run the broken app: `python -m streamlit run app.py`
+## Setup Instructions
 
-## 🕵️‍♂️ Your Mission
+1. Install Python 3.10 or newer.
+2. Clone the repository:
 
-1. **Play the game.** Open the "Developer Debug Info" tab in the app to see the secret number. Try to win.
-2. **Find the State Bug.** Why does the secret number change every time you click "Submit"? Ask ChatGPT: *"How do I keep a variable from resetting in Streamlit when I click a button?"*
-3. **Fix the Logic.** The hints ("Higher/Lower") are wrong. Fix them.
-4. **Refactor & Test.** - Move the logic into `logic_utils.py`.
-   - Run `pytest` in your terminal.
-   - Keep fixing until all tests pass!
-
-## 📝 Document Your Experience
-
-- [x] **Purpose:** The game is a number-guessing challenge in which the player chooses a difficulty, enters whole-number guesses, receives Higher/Lower feedback, manages an attempt limit, and tries to earn the best score.
-- [x] **Bugs found:** The starter hinted in the wrong direction, decimal input could be silently truncated, difficulty changes could leave a secret outside the selected range, and the first-win score formula was incorrect.
-- [x] **Fixes applied:** The core guessing and scoring functions were moved into `logic_utils.py`, the `Too High`/`Too Low` outcomes and hints were corrected, difficulty changes now reset session state and generate a secret in the new range, and decimal input is rejected instead of truncated.
-
-## Demo Walkthrough
-
-1. Select **Normal** difficulty. The game displays a range of 1 to 100 and allows 8 attempts.
-2. Open **Developer Debug Info** and note the generated secret; for this example, assume it is 50.
-3. Enter a guess of **60** and submit. The game decrements attempts and shows the outcome `Too High` with `📉 Go LOWER!`.
-4. Enter a guess of **40** and submit. The game shows `Too Low` with `📈 Go HIGHER!`; a wrong guess decreases the score by 5 points.
-5. Enter **50** and submit. The game displays `🎉 Correct!`, awards points for the winning attempt, shows balloons, and presents the final score.
-6. Click **New Game** to clear the attempts, score, history, and old secret, then generate a fresh secret for the selected difficulty.
-
-## 🧪 Test Results
-
-```text
-$ python3 -m pytest -q
-....                                                                     [100%]
-4 passed in 0.00s
+```bash
+git clone https://github.com/TakeMeHome1678/ai110-final.git
+cd ai110-final
 ```
 
-## 🚀 Stretch Features
+3. Create and activate a virtual environment:
 
-- [ ] [If you choose to complete Challenge 4, describe the Enhanced UI changes here — a screenshot is optional]
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+4. Install dependencies:
+
+```bash
+python -m pip install -r requirements.txt
+```
+
+5. Run the application:
+
+```bash
+python -m streamlit run app.py
+```
+
+6. Open the local URL printed by Streamlit.
+
+## Features
+
+- **RAG:** Added documents are stored in `data/knowledge.json` and retrieved with cosine similarity. Retrieval evidence is shown beside the answer.
+- **Agentic workflow:** Requests are classified, planned, executed by a tool, checked for confidence, and logged.
+- **Reliability system:** Empty input is rejected, missing evidence produces a low-confidence response, execution failures are logged, and pytest protects key behavior.
+- **Specialized behavior:** The agent uses constrained summaries and a Python debugging workflow rather than giving undifferentiated text answers.
+
+## Sample Interactions
+
+### 1. Summarize text
+
+**Input:** Paste “Retrieval augmented generation ranks relevant passages before creating an answer. It should not invent facts when evidence is missing.”
+
+**Result:** The system returns an extractive summary containing the source’s key statements and a direct confidence value.
+
+### 2. Retrieve debugging knowledge
+
+**Input:** “How should I debug a failing Python test?”
+
+**Result:** The agent returns a three-step debugging workflow and cites the Python debugging source from `data/knowledge.json`.
+
+### 3. No-evidence retrieval
+
+**Input:** “Retrieve the price of a secret planet.”
+
+**Result:** The system says it cannot retrieve supporting information and assigns low confidence instead of inventing an answer.
+
+## Design Decisions
+
+I used standard Python and Streamlit to keep setup reproducible and avoid an API-key dependency. Lexical cosine retrieval is transparent and easy to test, but it is weaker than semantic embeddings for paraphrases. Extractive summarization preserves source wording and avoids unsupported generation. A compact JSONL trace makes agent behavior inspectable without exposing hidden or private chain-of-thought text.
+
+## Testing Summary
+
+Run the suite with:
+
+```bash
+python -m pytest -q
+```
+
+The test harness checks matching and unrelated retrieval, summary behavior, request classification, multi-step plans, low-evidence handling, and confidence bounds. Human evaluation is recorded in [model_card.md](model_card.md).
+
+```text
+12 passed in 0.01s
+```
+
+If a test fails, the implementation should show the exact assertion and traceback so a developer can reproduce and isolate the issue.
+
+## Reflection
+
+This project changed my view of AI systems from “one model response” to a coordinated pipeline of inputs, retrieval, planning, tool execution, testing, and human review. The clearest lesson was that guardrails and evidence are useful not only as safety features, but also as engineering controls that make outputs easier to verify.
+
+Responsible-AI limitations and misuse considerations are documented in [model_card.md](model_card.md). Development interaction traces are documented in [ai_interactions.md](ai_interactions.md).
+
+## Repository Structure
+
+```text
+app.py                 Streamlit application
+rag_utils.py           Retrieval and extractive summarization
+agent_utils.py         Agent planning, execution, confidence, and logs
+data/knowledge.json    Built-in and user-added sources
+diagrams/architecture.mmd  Mermaid system architecture
+assets/                Exported architecture images
+logs/                  Runtime logs and execution traces
+model_card.md          Limitations, misuse, and human evaluation
+ai_interactions.md     Agent workflow and interaction trace log
+tests/test_applied_ai.py Automated reliability tests
+```
