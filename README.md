@@ -25,28 +25,25 @@ It wrote the code, ran away, and now the game is unplayable.
 
 ## 📝 Document Your Experience
 
-- [ ] Describe the game's purpose.
-- [ ] Detail which bugs you found.
-- [ ] Explain what fixes you applied.
+- [x] **Purpose:** The game is a number-guessing challenge in which the player chooses a difficulty, enters whole-number guesses, receives Higher/Lower feedback, manages an attempt limit, and tries to earn the best score.
+- [x] **Bugs found:** The starter hinted in the wrong direction, decimal input could be silently truncated, difficulty changes could leave a secret outside the selected range, and the first-win score formula was incorrect.
+- [x] **Fixes applied:** The core guessing and scoring functions were moved into `logic_utils.py`, the `Too High`/`Too Low` outcomes and hints were corrected, difficulty changes now reset session state and generate a secret in the new range, and decimal input is rejected instead of truncated.
 
-## 📸 Demo Walkthrough
+## Demo Walkthrough
 
-Describe your fixed game in numbered steps so a reader can follow along without watching a video:
-
-1. <!-- Describe this step -->
-2. <!-- Describe this step -->
-3. <!-- Describe this step -->
-4. <!-- Describe this step -->
-5. <!-- Add more steps as needed -->
-
-**Screenshot** *(optional)*: <!-- Insert a screenshot of your fixed, winning game here -->
+1. Select **Normal** difficulty. The game displays a range of 1 to 100 and allows 8 attempts.
+2. Open **Developer Debug Info** and note the generated secret; for this example, assume it is 50.
+3. Enter a guess of **60** and submit. The game decrements attempts and shows the outcome `Too High` with `📉 Go LOWER!`.
+4. Enter a guess of **40** and submit. The game shows `Too Low` with `📈 Go HIGHER!`; a wrong guess decreases the score by 5 points.
+5. Enter **50** and submit. The game displays `🎉 Correct!`, awards points for the winning attempt, shows balloons, and presents the final score.
+6. Click **New Game** to clear the attempts, score, history, and old secret, then generate a fresh secret for the selected difficulty.
 
 ## 🧪 Test Results
 
-```
-# Paste your pytest output here, e.g.:
-# pytest tests/
-# ========================= X passed in 0.XXs =========================
+```text
+$ python3 -m pytest -q
+....                                                                     [100%]
+4 passed in 0.00s
 ```
 
 ## 🚀 Stretch Features
